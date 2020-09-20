@@ -1,4 +1,4 @@
-package com.ege.ege;
+package com.ege.ege.Fragments;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -14,6 +14,9 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.ege.ege.Items.Tekrarlar_item;
+import com.ege.ege.R;
+import com.ege.ege.RecyclerViewAdapters.RecyclerT6;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentSnapshot;
@@ -28,13 +31,16 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
-public class FragmentTekrarlar extends Fragment {
+public class FragmentT6 extends Fragment {
     Locale locale = new Locale("tr");
-
     TextView textviewKonu;
     RatingBar ratingBar10;
     RatingBar ratingBar7;
     Button button3;
+
+
+    RecyclerT6 feedRecyclerAdapter;
+    private FirebaseAuth firebaseAuth;
     ArrayList<String> userEmailFromFB;
     ArrayList<String> userKonuAdıFromFB;
     ArrayList<Integer> userTeoriFromFB;
@@ -42,29 +48,25 @@ public class FragmentTekrarlar extends Fragment {
     ArrayList<Integer> userYüzdeFromFB;
     ArrayList<Integer> userKaçıncıTekrarFromFB;
     ArrayList<Integer> userAralıkFromFB;
-    RecyclerViewAdapter2 feedRecyclerAdapter;
-    ArrayList<Tekrarlar_item> list_tekrar;
-    View v;
-    private FirebaseAuth firebaseAuth;
     private FirebaseFirestore firebaseFirestore;
-    private RecyclerView recyclerTekrar;
+    ArrayList<Tekrarlar_item> list_tekrar;
+
+    View v;
+    private RecyclerView recyclerTekrar7;
     private List<Tekrarlar_item> listtekrar;
 
 
-    public FragmentTekrarlar() {
+    public FragmentT6() {
     }
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        v = inflater.inflate(R.layout.tekrarlar, container, false);
-
-
+        v = inflater.inflate(R.layout.t6, container, false);
         textviewKonu = v.findViewById(R.id.textviewtekrar);
         ratingBar10 = v.findViewById(R.id.ratingBar10);
         ratingBar7 = v.findViewById(R.id.ratingBar7);
         button3 = v.findViewById(R.id.button3);
-
 
         list_tekrar = new ArrayList<>();
 
@@ -73,7 +75,7 @@ public class FragmentTekrarlar extends Fragment {
         userKonuAdıFromFB = new ArrayList<>();
         userTeoriFromFB = new ArrayList<>();
         userPratikFromFB = new ArrayList<>();
-        userYüzdeFromFB = new ArrayList<Integer>();
+        userYüzdeFromFB = new ArrayList<>();
         userKaçıncıTekrarFromFB = new ArrayList<>();
         userAralıkFromFB = new ArrayList<>();
 
@@ -117,17 +119,12 @@ public class FragmentTekrarlar extends Fragment {
             }
         });*/
         getDataFromFirestore();
-
-        RecyclerView recyclerView = v.findViewById(R.id.recyclerTekrar1);
-        //feedRecyclerAdapter = new RecyclerShare(getContext(),userKonuAdıFromFB);
-
-        recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
-        feedRecyclerAdapter = new RecyclerViewAdapter2(getContext(), list_tekrar, userEmailFromFB, userKonuAdıFromFB, userTeoriFromFB, userPratikFromFB, userYüzdeFromFB, userKaçıncıTekrarFromFB, userAralıkFromFB);
+        RecyclerView recyclerView = v.findViewById(R.id.recyclerTekrar7);
+        recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+        feedRecyclerAdapter = new RecyclerT6(getContext(), list_tekrar, userEmailFromFB, userKonuAdıFromFB, userTeoriFromFB, userPratikFromFB, userYüzdeFromFB, userKaçıncıTekrarFromFB, userAralıkFromFB);
         recyclerView.setAdapter(feedRecyclerAdapter);
 
-
         return v;
-
     }
 
     public void getDataFromFirestore() {
@@ -151,14 +148,13 @@ public class FragmentTekrarlar extends Fragment {
                         //Casting
                         String userEmail = (String) data.get("userEmail");
                         String konu_adı = (String) data.get("Konu Adı");
-                        Integer yüzde = (Integer) data.get("Yüzde");
-                        //int kaçıncı_tekrar = (int) data.get("Kaçıncı Tekrar");
+                        long y = (long) data.get("Yüzde");
+                        int yüzde = (int) y;
 
 
                         userEmailFromFB.add(userEmail);
                         userKonuAdıFromFB.add(konu_adı);
                         userYüzdeFromFB.add(yüzde);
-                        //userKaçıncıTekrarFromFB.add(kaçıncı_tekrar);
 
 
                         feedRecyclerAdapter.notifyDataSetChanged();
@@ -178,6 +174,7 @@ public class FragmentTekrarlar extends Fragment {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        listtekrar = new ArrayList<>();
 
     }
 }

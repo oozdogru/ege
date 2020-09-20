@@ -1,4 +1,4 @@
-package com.ege.ege;
+package com.ege.ege.RecyclerViewAdapters;
 
 import android.content.Context;
 import android.os.Build;
@@ -15,9 +15,12 @@ import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.ege.ege.Items.Tekrarlar_item;
+import com.ege.ege.R;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -25,7 +28,8 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-public class RecyclerViewAdapter2 extends RecyclerView.Adapter<RecyclerViewAdapter2.PostHolder> {
+
+public class RecyclerTekrarlar extends RecyclerView.Adapter<RecyclerTekrarlar.PostHolder> {
     private static final String TAG = "RecViewAdapter2";
     Context mContext;
     ArrayList<Tekrarlar_item> list_tekrar;
@@ -36,8 +40,11 @@ public class RecyclerViewAdapter2 extends RecyclerView.Adapter<RecyclerViewAdapt
     private ArrayList<Integer> userYüzdeList;
     private ArrayList<Integer> userKaçıncıTekrarList;
     private ArrayList<Integer> userAralıkList;
+    private ArrayList<Integer> userGeçenGünList;
 
-    public RecyclerViewAdapter2(Context mContext, ArrayList<Tekrarlar_item> list_tekrar, ArrayList<String> userEmailList, ArrayList<String> userKonuAdıList, ArrayList<Integer> userTeoriList, ArrayList<Integer> userPratikList, ArrayList<Integer> userYüzdeList, ArrayList<Integer> userKaçıncıTekrarList, ArrayList<Integer> userAralıkList) {
+    public RecyclerTekrarlar(Context mContext, ArrayList<Tekrarlar_item> list_tekrar, ArrayList<String> userEmailList, ArrayList<String> userKonuAdıList, ArrayList<Integer> userTeoriList, ArrayList<Integer> userPratikList, ArrayList<Integer> userYüzdeList, ArrayList<Integer> userKaçıncıTekrarList, ArrayList<Integer> userAralıkList, ArrayList<Integer> userGeçenGünList) {
+        this.mContext = mContext;
+        this.list_tekrar = list_tekrar;
         this.userEmailList = userEmailList;
         this.userKonuAdıList = userKonuAdıList;
         this.userTeoriList = userTeoriList;
@@ -45,8 +52,7 @@ public class RecyclerViewAdapter2 extends RecyclerView.Adapter<RecyclerViewAdapt
         this.userYüzdeList = userYüzdeList;
         this.userKaçıncıTekrarList = userKaçıncıTekrarList;
         this.userAralıkList = userAralıkList;
-        this.mContext = mContext;
-        this.list_tekrar = list_tekrar;
+        this.userGeçenGünList = userGeçenGünList;
     }
 
     @NonNull
@@ -64,21 +70,26 @@ public class RecyclerViewAdapter2 extends RecyclerView.Adapter<RecyclerViewAdapt
         holder.progress.setProgress((userYüzdeList.get(position)));
         holder.textView3.setText(userYüzdeList.get(position).toString());
 
+
         holder.button3.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 FirebaseAuth firebaseAuth = FirebaseAuth.getInstance();
                 FirebaseFirestore firebaseFirestore = FirebaseFirestore.getInstance();
+                FirebaseUser firebaseUser = firebaseAuth.getCurrentUser();
+                String userEmail = firebaseUser.getEmail();
 
 
                 String konu_adı = holder.textviewtekrar.getText().toString();
                 int teori = (int) holder.ratingBar10.getRating();
                 int pratik = (int) holder.ratingBar7.getRating();
-                int kaçıncı_tekrar = 1;
+                int kaçıncı_tekrar = Integer.parseInt(String.valueOf(userKaçıncıTekrarList.get(position))) + 1;
                 int aralık = ((2 * kaçıncı_tekrar) - 1) * ((teori + pratik) / 2);
-                int yüzde = (100 - (100 / 7) * ((2 * kaçıncı_tekrar) - 1));
+                int gün = 3;
+                int yüzde = (teori + pratik) * 100 / 14 * ((aralık - gün) / aralık);
 
                 HashMap<String, Object> postData = new HashMap<>();
+                postData.put("useremail", userEmail);
                 postData.put("Konu Adı", konu_adı);
                 postData.put("Teori", teori);
                 postData.put("Pratik", pratik);
@@ -117,6 +128,7 @@ public class RecyclerViewAdapter2 extends RecyclerView.Adapter<RecyclerViewAdapt
             }
         });
 
+
     }
 
     @Override
@@ -142,6 +154,7 @@ public class RecyclerViewAdapter2 extends RecyclerView.Adapter<RecyclerViewAdapt
             ratingBar10 = itemView.findViewById(R.id.ratingBar10);
             ratingBar7 = itemView.findViewById(R.id.ratingBar7);
             button3 = itemView.findViewById(R.id.button3);
+
 
         }
     }
